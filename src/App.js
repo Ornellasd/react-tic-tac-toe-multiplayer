@@ -2,42 +2,47 @@ import { useState } from 'react';
 
 import './App.css';
 
-const Block = ({ value, turn, setTurn }) => {
+const Block = ({ value, turn, setTurn, setContent, updatedContent }) => {
   const [checked, setChecked] = useState(false);
-  const [mark, setMark] = useState();
   
-  const handleClick = () => {
+  const handleDraw = (index) => {
     setChecked(true);
 
     if(turn) {
-      setMark('X');
+      updatedContent[index] = 'X';
+
     } else {
-      setMark('O');
+      updatedContent[index] = 'O';
     }
 
+    setContent(updatedContent);
     setTurn(!turn);
   };
 
   return (
-    <div id={`block_${value}`} class="block" onClick={handleClick}>
-      {checked && mark}
+    <div id={`block_${value}`} className="block" onClick={() => handleDraw(value)}>
+      {updatedContent[value]}
     </div>
   )
 };
 
 const App = () => {
   const [turn, setTurn] = useState(true);
-  const blocks = [];
+  const [content, setContent] = useState(['', '', '', '', '', '', '', '', '']);
+
+  const updatedContent = [...content];
 
   // create 3 x 3 grid
+  const blocks = [];
+
   for(let i = 0; i < 9; i++) {
-    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} />);
+    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} />);
   }
 
   return (
-    <div class="container">
+    <div className="container">
       <h1>Tic-Tac-Toe</h1>
-      <div class="play-area">
+      <div className="play-area">
         {blocks}
       </div>
     </div>
