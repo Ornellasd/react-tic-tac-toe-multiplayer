@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+
+import { SocketContext } from './context/socket';
 
 import './App.css';
 
@@ -89,6 +91,15 @@ const App = () => {
     calculateWinner();
     calculateTie();
   }, [content]);
+
+  // socket.io stuff
+  const socket = useContext(SocketContext);
+
+  useEffect(() => {
+    socket.on('hello', (msg) => {
+      console.log(msg);
+    });
+  }, [socket]);
 
   return (
     <div className="container">
