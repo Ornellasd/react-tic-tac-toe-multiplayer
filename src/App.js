@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import './App.css';
 
-const Block = ({ value, turn, setTurn, setContent, updatedContent }) => {  
+const Block = ({ value, turn, setTurn, setContent, updatedContent, isOver }) => {  
   const handleDraw = (index) => {
     if(turn) {
       updatedContent[index] = 'X';
@@ -16,18 +16,18 @@ const Block = ({ value, turn, setTurn, setContent, updatedContent }) => {
   };
 
   return (
-    <div id={`block_${value}`} className="block" onClick={() => handleDraw(value)}>
+    <div id={`block_${value}`} className="block" onClick={() => !isOver && handleDraw(value) }>
       {updatedContent[value]}
     </div>
   )
 };
 
-const PlayArea = ({ turn, setTurn, setContent, updatedContent }) => {
+const PlayArea = ({ turn, setTurn, setContent, updatedContent, isOver }) => {
   // create 3 x 3 grid
   const blocks = [];
 
   for(let i = 0; i < 9; i++) {
-    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} />);
+    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} />);
   }
 
   return (
@@ -70,7 +70,6 @@ const App = () => {
 
   const calculateTie = () => {
     for(let i = 0; i <= 8; i++) {
-      console.log(content);
       if(content[i] === '') {
         return;
       }
@@ -87,7 +86,7 @@ const App = () => {
   return (
     <div className="container">
       <h1>Tic-Tac-Toe</h1>
-      <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} />
+      <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} />
       {isOver && <h2 id="winner">Winner is {winner}</h2>}
       {isTie && <h2>Game is Tie</h2>}
     </div>
