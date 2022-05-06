@@ -1,28 +1,55 @@
+import { useState } from 'react';
+
 import './App.css';
 
-const Grid = () => {
+const Block = ({ value, turn, setTurn }) => {
+  const [checked, setChecked] = useState(false);
+  const [mark, setMark] = useState();
+  
+  const handleClick = () => {
+    setChecked(true);
+
+    if(turn) {
+      setMark('X');
+    } else {
+      setMark('O');
+    }
+
+    setTurn(!turn);
+  };
+
+  return (
+    <div id={`block_${value}`} class="block" onClick={handleClick}>
+      {checked && mark}
+    </div>
+  )
+};
+
+const Grid = ({ turn, setTurn }) => {
   return (
     <div class="play-area">
-      <div id="block_0" class="block">X</div>
-      <div id="block_1" class="block">O</div>
-      <div id="block_2" class="block"></div>
-      <div id="block_3" class="block"></div>
-      <div id="block_4" class="block"></div>
-      <div id="block_5" class="block"></div>
-      <div id="block_6" class="block"></div>
-      <div id="block_7" class="block"></div>
-      <div id="block_8" class="block"></div>
+      <Block value={0} turn={turn} setTurn={setTurn} />
+      <Block value={1} turn={turn} setTurn={setTurn} />
+      <Block value={2} turn={turn} setTurn={setTurn} />
+      <Block value={3} turn={turn} setTurn={setTurn} />
+      <Block value={4} turn={turn} setTurn={setTurn} />
+      <Block value={5} turn={turn} setTurn={setTurn} />
+      <Block value={6} turn={turn} setTurn={setTurn} />
+      <Block value={7} turn={turn} setTurn={setTurn} />
+      <Block value={8} turn={turn} setTurn={setTurn} />
     </div>
   );
 };
 
 const App = () => {
+  const [turn, setTurn] = useState(false);
+
   return (
     <div class="container">
       <h1>Tic-Tac-Toe</h1>
-      <Grid />
+      <Grid turn={turn} setTurn={setTurn} />
     </div>
-  )
-}
+  );
+};
 
 export default App;
