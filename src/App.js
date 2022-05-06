@@ -25,29 +25,21 @@ const Block = ({ value, turn, setTurn }) => {
   )
 };
 
-const Grid = ({ turn, setTurn }) => {
-  return (
-    <div class="play-area">
-      <Block value={0} turn={turn} setTurn={setTurn} />
-      <Block value={1} turn={turn} setTurn={setTurn} />
-      <Block value={2} turn={turn} setTurn={setTurn} />
-      <Block value={3} turn={turn} setTurn={setTurn} />
-      <Block value={4} turn={turn} setTurn={setTurn} />
-      <Block value={5} turn={turn} setTurn={setTurn} />
-      <Block value={6} turn={turn} setTurn={setTurn} />
-      <Block value={7} turn={turn} setTurn={setTurn} />
-      <Block value={8} turn={turn} setTurn={setTurn} />
-    </div>
-  );
-};
-
 const App = () => {
-  const [turn, setTurn] = useState(false);
+  const [turn, setTurn] = useState(true);
+  const blocks = [];
+
+  // create 3 x 3 grid
+  for(let i = 0; i < 9; i++) {
+    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} />);
+  }
 
   return (
     <div class="container">
       <h1>Tic-Tac-Toe</h1>
-      <Grid turn={turn} setTurn={setTurn} />
+      <div class="play-area">
+        {blocks}
+      </div>
     </div>
   );
 };
