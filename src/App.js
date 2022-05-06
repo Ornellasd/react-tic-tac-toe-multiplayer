@@ -44,8 +44,6 @@ const App = () => {
   const [winner, setWinner] = useState(null);
   const [isTie, setIsTie] = useState(false);
 
-  console.log(winner, 'is there a winner?');
-
   const updatedContent = [...content];
 
   const calculateWinner = () => {
@@ -70,8 +68,20 @@ const App = () => {
     }
   };
 
+  const calculateTie = () => {
+    for(let i = 0; i <= 8; i++) {
+      console.log(content);
+      if(content[i] === '') {
+        return;
+      }
+    }
+
+    setIsTie(true);
+  };
+
   useEffect(() => {
     calculateWinner();
+    calculateTie();
   }, [content]);
 
   return (
