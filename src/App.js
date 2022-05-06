@@ -78,6 +78,13 @@ const App = () => {
     setIsTie(true);
   };
 
+  const handleReset = () => {
+    setContent(['', '', '', '', '', '', '', '', '']);
+    setIsOver(false);
+    setWinner(null);
+    setIsTie(false);
+  };
+
   useEffect(() => {
     calculateWinner();
     calculateTie();
@@ -89,6 +96,7 @@ const App = () => {
       <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} />
       {isOver && <h2 id="winner">Winner is {winner}</h2>}
       {isTie && <h2>Game is Tie</h2>}
+      {(isTie || isOver) && <button onClick={() => handleReset()}>RESET BOARD</button>}
     </div>
   );
 };
