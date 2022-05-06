@@ -1,11 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import './App.css';
 
-const Block = ({ value, turn, setTurn, setContent, updatedContent, calculateWinner }) => {  
+const Block = ({ value, turn, setTurn, setContent, updatedContent }) => {  
   const handleDraw = (index) => {
-    calculateWinner();
-
     if(turn) {
       updatedContent[index] = 'X';
 
@@ -24,12 +22,12 @@ const Block = ({ value, turn, setTurn, setContent, updatedContent, calculateWinn
   )
 };
 
-const PlayArea = ({ turn, setTurn, setContent, updatedContent, calculateWinner }) => {
+const PlayArea = ({ turn, setTurn, setContent, updatedContent }) => {
   // create 3 x 3 grid
   const blocks = [];
 
   for(let i = 0; i < 9; i++) {
-    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} calculateWinner={calculateWinner} />);
+    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} />);
   }
 
   return (
@@ -72,10 +70,14 @@ const App = () => {
     }
   };
 
+  useEffect(() => {
+    calculateWinner();
+  }, [content]);
+
   return (
     <div className="container">
       <h1>Tic-Tac-Toe</h1>
-      <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} calculateWinner={calculateWinner} />
+      <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} />
       {isOver && <h2 id="winner">Winner is {winner}</h2>}
       {isTie && <h2>Game is Tie</h2>}
     </div>
