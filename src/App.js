@@ -1,10 +1,20 @@
 import { useState, useEffect, useContext } from 'react';
 
-import { SocketContext } from './context/socket';
+import { socket, SocketContext } from './context/socket';
 
 import './App.css';
 
-const Block = ({ value, turn, setTurn, setContent, updatedContent, isOver }) => {  
+// const Block = ({ value, turn, setTurn, setContent, updatedContent, isOver }) => {  
+
+
+//   return (
+//     <div id={`block_${value}`} className="block" onClick={() => !isOver && handleDraw(value, false) }>
+//       {updatedContent[value]}
+//     </div>
+//   )
+// };
+
+const PlayArea = ({ turn, setTurn, setContent, updatedContent, opponentPlay }) => {
   const handleDraw = (index) => {
     if(turn) {
       updatedContent[index] = 'X';
@@ -17,20 +27,21 @@ const Block = ({ value, turn, setTurn, setContent, updatedContent, isOver }) => 
     setTurn(!turn);
   };
 
-  return (
-    <div id={`block_${value}`} className="block" onClick={() => !isOver && handleDraw(value) }>
-      {updatedContent[value]}
-    </div>
-  )
-};
-
-const PlayArea = ({ turn, setTurn, setContent, updatedContent, isOver }) => {
   // create 3 x 3 grid
   const blocks = [];
 
   for(let i = 0; i < 9; i++) {
-    blocks.push(<Block value={i} turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} />);
+    blocks.push(
+      <div id={`block_${i}`} className="block" onClick={() => {handleDraw(i, false)}}>
+        {updatedContent[i]}
+      </div>
+    );
   }
+  // for(let i = 0; i < 9; i++) {
+  //   blocks.push(<Block value={i} turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} />);
+  // }
+
+  
 
   return (
     <div className="play-area">
@@ -39,9 +50,7 @@ const PlayArea = ({ turn, setTurn, setContent, updatedContent, isOver }) => {
   );
 };
 
-const App = () => {
-  const [content, setContent] = useState(['', '', '', '', '', '', '', '', '']);
-  const [turn, setTurn] = useState(true);
+const Game = ({ content, setContent, turn, setTurn, opponentPlay }) => {
   const [isOver, setIsOver] = useState(false);
   const [winner, setWinner] = useState(null);
   const [isTie, setIsTie] = useState(false);
@@ -92,6 +101,23 @@ const App = () => {
     calculateTie();
   }, [content]);
 
+  return (
+    <div className="container">
+      <h1>Tic-Tac-Toe</h1>
+      <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} opponentPlay={opponentPlay} />
+      {isOver && <h2 id="winner">Winner is {winner}</h2>}
+      {isTie && <h2>Game is Tie</h2>}
+      {(isTie || isOver) && <button onClick={() => handleReset()}>RESET BOARD</button>}
+    </div>
+  );
+
+};
+
+const App = () => {
+  const [content, setContent] = useState(['', '', '', '', '', '', '', '', '']);
+  const [turn, setTurn] = useState(true);
+  const [opponentPlay, setOpponentPlay] = useState();
+
   // socket.io stuff
   const socket = useContext(SocketContext);
 
@@ -99,16 +125,15 @@ const App = () => {
     socket.on('hello', (msg) => {
       console.log(msg);
     });
+
+    socket.on('play', (index) => {
+      // console.log('received index', index);
+      setOpponentPlay(index);
+    });
   }, [socket]);
 
   return (
-    <div className="container">
-      <h1>Tic-Tac-Toe</h1>
-      <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} />
-      {isOver && <h2 id="winner">Winner is {winner}</h2>}
-      {isTie && <h2>Game is Tie</h2>}
-      {(isTie || isOver) && <button onClick={() => handleReset()}>RESET BOARD</button>}
-    </div>
+    <Game content={content} setContent={setContent} turn={turn} setTurn={setTurn} opponentPlay={opponentPlay} />
   );
 };
 
