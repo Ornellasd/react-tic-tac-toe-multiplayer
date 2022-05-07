@@ -1,17 +1,18 @@
 import { useState, useEffect, useContext } from 'react';
 
-import { socket, SocketContext } from './context/socket';
+import { SocketContext } from './context/socket';
 
 import './App.css';
 
-const PlayArea = ({ updatedContent, handleDraw }) => {
+const PlayArea = ({ content, handleDraw, myTurn }) => {
+  console.log(myTurn, 'from play area');
   // create 3 x 3 grid
   const blocks = [];
 
   for(let i = 0; i < 9; i++) {
     blocks.push(
-      <div id={`block_${i}`} className="block" onClick={() => handleDraw(i)}>
-        {updatedContent[i]}
+      <div id={`block_${i}`} className="block" onClick={() =>  myTurn && handleDraw(i, false)}>
+        {content[i]}
       </div>
     );
   }
@@ -23,12 +24,10 @@ const PlayArea = ({ updatedContent, handleDraw }) => {
   );
 };
 
-const Game = ({ content, setContent, turn, setTurn, opponentPlay, handleDraw }) => {
+const Game = ({ content, setContent, myTurn, handleDraw }) => {
   const [isOver, setIsOver] = useState(false);
   const [winner, setWinner] = useState(null);
   const [isTie, setIsTie] = useState(false);
-
-  const updatedContent = [...content];
 
   const calculateWinner = () => {
     const WIN_CONDITIONS = [
@@ -77,7 +76,7 @@ const Game = ({ content, setContent, turn, setTurn, opponentPlay, handleDraw }) 
   return (
     <div className="container">
       <h1>Tic-Tac-Toe</h1>
-      <PlayArea turn={turn} setTurn={setTurn} setContent={setContent} updatedContent={updatedContent} isOver={isOver} opponentPlay={opponentPlay} handleDraw={handleDraw} />
+      <PlayArea myTurn={myTurn} content={content} setContent={setContent} isOver={isOver} handleDraw={handleDraw} />
       {isOver && <h2 id="winner">Winner is {winner}</h2>}
       {isTie && <h2>Game is Tie</h2>}
       {(isTie || isOver) && <button onClick={() => handleReset()}>RESET BOARD</button>}
@@ -89,20 +88,48 @@ const Game = ({ content, setContent, turn, setTurn, opponentPlay, handleDraw }) 
 const App = () => {
   const [content, setContent] = useState(['', '', '', '', '', '', '', '', '']);
   const [turn, setTurn] = useState(true);
-  const [opponentPlay, setOpponentPlay] = useState();
-
+  // const [opponentTurn] = useState(false);
   const updatedContent = [...content];
 
-  const handleDraw = (index) => {
-    if(turn) {
-      updatedContent[index] = 'X';
+  const [myTurn, setMyTurn] = useState(true);
 
-    } else {
-      updatedContent[index] = 'O';
+  const [play, setPlay] = useState(1);
+
+  // console.log(myTurn);
+  console.log(play, 'from root');
+
+
+  const updateByIndex = (newValue, index) => {
+    setContent(values => values.map((value, i) => i === index ? newValue: value));
+  };
+
+  const handleDraw = (index, drawFromOther) => {
+    if(!drawFromOther) {
+      socket.emit('play', index);
+      setMyTurn(!myTurn);
     }
 
-    setContent(updatedContent);
-    setTurn(!turn);
+    console.log(play, 'from handle draw before setPlay');
+
+    if(play % 2 !== 0) {
+      // updatedContent[index] = 'X';
+      updateByIndex('X', index);
+    } else {     
+      updateByIndex('O', index);
+    }
+
+    // setTurn(!turn);
+    // setContent(updatedContent);
+
+    setPlay(play + 1);
+    console.log(play, 'from handle draw after setPlay');
+
+
+    // setContent(updatedContent);
+    // console.log(updatedContent);
+    // setTurn(!turn);
+
+    // // setMyTurn(!myTurn);
   };
 
   // socket.io stuff
@@ -114,12 +141,14 @@ const App = () => {
     });
 
     socket.on('play', (index) => {
-      setOpponentPlay(index);
+      handleDraw(index, true);
+      setMyTurn(true);
+      setPlay(play + 1);
     });
   }, [socket]);
 
   return (
-    <Game content={content} setContent={setContent} turn={turn} setTurn={setTurn} opponentPlay={opponentPlay} handleDraw={handleDraw} />
+    <Game content={content} setContent={setContent} turn={turn} handleDraw={handleDraw} myTurn={myTurn} />
   );
 };
 
