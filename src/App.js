@@ -90,10 +90,8 @@ const Game = ({ content, setContent, myTurn, handleDraw, setMyTurn }) => {
 const App = () => {
   const [content, setContent] = useState(['', '', '', '', '', '', '', '', '']);
   const [isX, setIsX] = useState(true);
-
   const [myTurn, setMyTurn] = useState(true);
 
-  // change this function back to the old spread operator way so can compare values not to overite upon click
   const updateByIndex = (newValue, index) => {
     setContent(values => values.map((value, i) => i === index ? newValue: value));
   };
@@ -105,9 +103,9 @@ const App = () => {
     }
     
     if(isX) {
-      updateByIndex('X', index);
+      content[index] === '' && updateByIndex('X', index);
     } else {     
-      updateByIndex('O', index);
+      content[index] === '' && updateByIndex('O', index);
     }
   };
 
