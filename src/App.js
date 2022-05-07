@@ -4,13 +4,13 @@ import { SocketContext } from './context/socket';
 
 import './App.css';
 
-const PlayArea = ({ content, handleDraw, myTurn }) => {
+const PlayArea = ({ content, handleDraw, myTurn, isOver }) => {
   // create 3 x 3 grid
   const blocks = [];
 
   for(let i = 0; i < 9; i++) {
     blocks.push(
-      <div id={`block_${i}`} className="block" onClick={() =>  myTurn && handleDraw(i, false)}>
+      <div id={`block_${i}`} className="block" onClick={() =>  (myTurn && !isOver) && handleDraw(i, false)}>
         {content[i]}
       </div>
     );
@@ -76,7 +76,7 @@ const Game = ({ content, setContent, myTurn, handleDraw, setMyTurn }) => {
   return (
     <div className="container">
       <h1>Tic-Tac-Toe</h1>
-      <PlayArea myTurn={myTurn} content={content} setContent={setContent} isOver={isOver} handleDraw={handleDraw} />
+      <PlayArea myTurn={myTurn} content={content} isOver={isOver} handleDraw={handleDraw} />
       {isOver && <h2 id="winner">Winner is {winner}</h2>}
       {isTie && <h2>Game is Tie</h2>}
       {(isTie || isOver) && <button onClick={() => handleReset()}>RESET BOARD</button>}
