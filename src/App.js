@@ -5,7 +5,7 @@ import { SocketContext } from './context/socket';
 import './App.css';
 
 const PlayArea = ({ content, handleDraw, myTurn }) => {
-  console.log(myTurn, 'from play area');
+  // console.log(myTurn, 'from play area');
   // create 3 x 3 grid
   const blocks = [];
 
@@ -96,8 +96,9 @@ const App = () => {
   const [play, setPlay] = useState(1);
 
   // console.log(myTurn);
-  console.log(play, 'from root');
+  // console.log(play, 'from root');
 
+  console.log(turn, 'from root');
 
   const updateByIndex = (newValue, index) => {
     setContent(values => values.map((value, i) => i === index ? newValue: value));
@@ -105,13 +106,15 @@ const App = () => {
 
   const handleDraw = (index, drawFromOther) => {
     if(!drawFromOther) {
+      // setTurn(!turn);
       socket.emit('play', index);
       setMyTurn(!myTurn);
     }
 
-    console.log(play, 'from handle draw before setPlay');
-
-    if(play % 2 !== 0) {
+    // console.log(play, 'from handle draw before setPlay');
+    // SET TURN NOT FIRING OFF, break this out into separate function
+    
+    if(turn) {
       // updatedContent[index] = 'X';
       updateByIndex('X', index);
     } else {     
@@ -121,16 +124,14 @@ const App = () => {
     // setTurn(!turn);
     // setContent(updatedContent);
 
-    setPlay(play + 1);
-    console.log(play, 'from handle draw after setPlay');
-
-
-    // setContent(updatedContent);
-    // console.log(updatedContent);
-    // setTurn(!turn);
-
-    // // setMyTurn(!myTurn);
+    // setPlay(play + 1);
+    // console.log(play, 'from handle draw after setPlay');
   };
+
+  useEffect(() => {
+    setTurn(!turn);
+    // console.log('content changed');
+  }, []);
 
   // socket.io stuff
   const socket = useContext(SocketContext);
@@ -143,7 +144,8 @@ const App = () => {
     socket.on('play', (index) => {
       handleDraw(index, true);
       setMyTurn(true);
-      setPlay(play + 1);
+      // setTurn(!turn);
+      // setPlay(play + 1);
     });
   }, [socket]);
 
