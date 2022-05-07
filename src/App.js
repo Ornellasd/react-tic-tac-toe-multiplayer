@@ -5,7 +5,6 @@ import { SocketContext } from './context/socket';
 import './App.css';
 
 const PlayArea = ({ content, handleDraw, myTurn }) => {
-  // console.log(myTurn, 'from play area');
   // create 3 x 3 grid
   const blocks = [];
 
@@ -24,7 +23,7 @@ const PlayArea = ({ content, handleDraw, myTurn }) => {
   );
 };
 
-const Game = ({ content, setContent, myTurn, handleDraw }) => {
+const Game = ({ content, setContent, myTurn, handleDraw, setMyTurn }) => {
   const [isOver, setIsOver] = useState(false);
   const [winner, setWinner] = useState(null);
   const [isTie, setIsTie] = useState(false);
@@ -66,6 +65,7 @@ const Game = ({ content, setContent, myTurn, handleDraw }) => {
     setIsOver(false);
     setWinner(null);
     setIsTie(false);
+    setMyTurn(true);
   };
 
   useEffect(() => {
@@ -80,6 +80,8 @@ const Game = ({ content, setContent, myTurn, handleDraw }) => {
       {isOver && <h2 id="winner">Winner is {winner}</h2>}
       {isTie && <h2>Game is Tie</h2>}
       {(isTie || isOver) && <button onClick={() => handleReset()}>RESET BOARD</button>}
+      {(!isOver && myTurn) && <h2>Your Turn</h2>}
+      {(!isOver && !myTurn) && <h2>Opponent's Turn</h2>}
     </div>
   );
 
@@ -87,50 +89,30 @@ const Game = ({ content, setContent, myTurn, handleDraw }) => {
 
 const App = () => {
   const [content, setContent] = useState(['', '', '', '', '', '', '', '', '']);
-  const [turn, setTurn] = useState(true);
-  // const [opponentTurn] = useState(false);
-  const updatedContent = [...content];
+  const [isX, setIsX] = useState(true);
 
   const [myTurn, setMyTurn] = useState(true);
 
-  const [play, setPlay] = useState(1);
-
-  // console.log(myTurn);
-  // console.log(play, 'from root');
-
-  console.log(turn, 'from root');
-
+  // change this function back to the old spread operator way so can compare values not to overite upon click
   const updateByIndex = (newValue, index) => {
     setContent(values => values.map((value, i) => i === index ? newValue: value));
   };
 
   const handleDraw = (index, drawFromOther) => {
     if(!drawFromOther) {
-      // setTurn(!turn);
       socket.emit('play', index);
       setMyTurn(!myTurn);
     }
-
-    // console.log(play, 'from handle draw before setPlay');
-    // SET TURN NOT FIRING OFF, break this out into separate function
     
-    if(turn) {
-      // updatedContent[index] = 'X';
+    if(isX) {
       updateByIndex('X', index);
     } else {     
       updateByIndex('O', index);
     }
-
-    // setTurn(!turn);
-    // setContent(updatedContent);
-
-    // setPlay(play + 1);
-    // console.log(play, 'from handle draw after setPlay');
   };
 
   useEffect(() => {
-    setTurn(!turn);
-    // console.log('content changed');
+    setIsX(!isX);
   }, []);
 
   // socket.io stuff
@@ -144,13 +126,11 @@ const App = () => {
     socket.on('play', (index) => {
       handleDraw(index, true);
       setMyTurn(true);
-      // setTurn(!turn);
-      // setPlay(play + 1);
     });
   }, [socket]);
 
   return (
-    <Game content={content} setContent={setContent} turn={turn} handleDraw={handleDraw} myTurn={myTurn} />
+    <Game content={content} setContent={setContent} handleDraw={handleDraw} myTurn={myTurn} setMyTurn={setMyTurn} />
   );
 };
 
