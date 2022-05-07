@@ -80,8 +80,8 @@ const Game = ({ content, setContent, myTurn, handleDraw, setMyTurn }) => {
       {isOver && <h2 id="winner">Winner is {winner}</h2>}
       {isTie && <h2>Game is Tie</h2>}
       {(isTie || isOver) && <button onClick={() => handleReset()}>RESET BOARD</button>}
-      {(!isOver && myTurn) && <h2>Your Turn</h2>}
-      {(!isOver && !myTurn) && <h2>Opponent's Turn</h2>}
+      {((!isOver && !isTie) && myTurn) && <h2>Your Turn</h2>}
+      {((!isOver && !isTie) && !myTurn) && <h2>Opponent's Turn</h2>}
     </div>
   );
 
